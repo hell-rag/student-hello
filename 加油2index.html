@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学生加油打气</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #1a6fb0, #0a4a7a);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            touch-action: manipulation;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .ocean {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #1a6fb0, #0a4a7a);
+            overflow: hidden;
+        }
+        
+        .wave {
+            position: absolute;
+            bottom: 0;
+            width: 200%;
+            height: 60px;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 70 Q 150 50 300 70 T 600 70 T 900 70 T 1200 70 L 1200 100 L 0 100 Z" fill="%231a6fb0"/></svg>');
+            background-size: 50% 100%;
+            animation: wave 10s linear infinite;
+            opacity: 0.6;
+        }
+        
+        .wave:nth-child(2) {
+            bottom: 10px;
+            opacity: 0.4;
+            animation: wave 8s linear infinite;
+            animation-delay: -5s;
+        }
+        
+        .wave:nth-child(3) {
+            bottom: 20px;
+            opacity: 0.2;
+            animation: wave 12s linear infinite;
+            animation-delay: -2s;
+        }
+        
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        
+        /* 移动端优化样式 */
+        .app-title {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12vw;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 30;
+            text-align: center;
+            width: 90%;
+            line-height: 1.3;
+            pointer-events: none;
+        }
+        
+        .cloud-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid white;
+            border-radius: 30px;
+            font-size: 20px;
+            color: white;
+            cursor: pointer;
+            z-index: 25;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cloud-button:active {
+            transform: translate(-50%, -50%) scale(0.95);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        /* 移动端控制面板 */
+        .mobile-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            z-index: 30;
+            padding: 0 10px;
+        }
+        
+        .mobile-controls button {
+            flex: 1;
+            max-width: 80px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-controls button:active {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(0.95);
+        }
+        
+        /* 响应式面板 */
+        .panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 400px;
+            max-height: 80%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: #333;
+            display: none;
+            overflow-y: auto;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #1a6fb0;
+            cursor: pointer;
+        }
+        
+        /* 保持其他重要样式 */
+        .bubbles { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
+        .bubble { position: absolute; background: rgba(255, 255, 255, 0.15); border-radius: 50%; animation: floatBubble linear infinite; }
+        .holiday-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 15vw; color: white; text-align: center; display: none; }
+        .big-countdown { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; text-align: center; }
+        .encouragement { position: absolute; font-size: 18px; color: white; animation: barrage 8s linear forwards; }
+        
+        @keyframes barrage {
+            0% { transform: translateX(100%); opacity: 1; }
+            100% { transform: translateX(-100vw); opacity: 0; }
+        }
+        
+        /* 平板和桌面优化 */
+        @media (min-width: 768px) {
+            .app-title { font-size: 8vw; top: 25%; }
+            .cloud-button { width: 160px; height: 70px; font-size: 24px; }
+            .mobile-controls button { max-width: 100px; height: 45px; font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="ocean">
+            <div class="wave"></div>
+            <div class="wave"></div>
+            <div class="wave"></div>
+        </div>
+        
+        <div class="bubbles" id="bubbles"></div>
+        <div class="holiday-text" id="holidayText">放假啦！🎉</div>
+        <div class="big-countdown" id="bigCountdown"></div>
+        
+        <!-- 移动端控制按钮 -->
+        <div class="mobile-controls">
+            <button onclick="togglePanel('settingsPanel')">设置</button>
+            <button onclick="togglePanel('musicPanel')">音乐</button>
+            <button onclick="togglePanel('problemsPanel')">问题</button>
+            <button onclick="togglePanel('diaryPanel')">日记</button>
+        </div>
+        
+        <div class="app-title" id="appTitle">加油！同学</div>
+        <button class="cloud-button" id="cloudButton">加油</button>
+        
+        <div class="counter" id="counter" style="position: absolute; top: 20px; right: 20px;"></div>
+        <div class="thank-you" id="thankYou" style="position: absolute; top: 20px; left: 20px; font-size: 18px; opacity: 0;">谢谢你努力生活</div>
+        
+        <!-- 设置面板 -->
+        <div class="panel" id="settingsPanel">
+            <button class="close-btn" onclick="closePanel('settingsPanel')">×</button>
+            <h3>设置</h3>
+            <input type="date" id="holidayDate" style="width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px;">
+            <button onclick="setHolidayDate()" style="width: 100%; padding: 10px; background: #1a6fb0; color: white; border: none; border-radius: 5px; margin: 5px 0;">设置放假日期</button>
+            <button onclick="createFullScreenBubbles()" style="width: 100%; padding: 10px; background: #1a6fb0; color: white; border: none; border-radius: 5px; margin: 5px 0;">特效模式</button>
+        </div>
+        
+        <!-- 音乐面板 -->
+        <div class="panel" id="musicPanel">
+            <button class="close-btn" onclick="closePanel('musicPanel')">×</button>
+            <h3>背景音乐</h3>
+            <button onclick="playMusic()" style="width: 100%; padding: 10px; background: #1a6fb0; color: white; border: none; border-radius: 5px; margin: 5px 0;">播放</button>
+            <button onclick="pauseMusic()" style="width: 100%; padding: 10px; background: #1a6fb0; color: white; border: none; border-radius: 5px; margin: 5px 0;">暂停</button>
+            <div style="margin: 10px 0;">
+                <span>音量:</span>
+                <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5" onchange="changeVolume(this.value)" style="width: 100%;">
+            </div>
+        </div>
+        
+        <!-- 其他面板内容保持不变但使用panel样式 -->
+        <div class="panel" id="problemsPanel">
+            <button class="close-btn" onclick="closePanel('problemsPanel')">×</button>
+            <h3>大学生问题</h3>
+            <div style="margin: 10px 0;">
+                <div onclick="showProblemDetail(1)" style="background: #f0f8ff; padding: 10px; margin: 5px 0; border-radius: 5px; cursor: pointer;">学习压力大</div>
+                <div onclick="showProblemDetail(2)" style="background: #f0f8ff; padding: 10px; margin: 5px 0; border-radius: 5px; cursor: pointer;">未来迷茫</div>
+                <div onclick="showProblemDetail(3)" style="background: #f0f8ff; padding: 10px; margin: 5px 0; border-radius: 5px; cursor: pointer;">人际关系</div>
+            </div>
+        </div>
+        
+        <div class="panel" id="diaryPanel">
+            <button class="close-btn" onclick="closePanel('diaryPanel')">×</button>
+            <h3>我的日记</h3>
+            <textarea id="diaryInput" placeholder="记录今天的心情..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin: 10px 0;"></textarea>
+            <button onclick="saveDiary()" style="width: 100%; padding: 10px; background: #1a6fb0; color: white; border: none; border-radius: 5px;">保存日记</button>
+            <div id="diaryEntries" style="margin-top: 15px;"></div>
+        </div>
+
+        <audio id="backgroundMusic" loop>
+            <!-- 使用免费背景音乐链接 -->
+            <source src="https://assets.mixkit.co/music/preview/mixkit-inspiring-soft-ambient-748.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <script>
+        // 移动端优化代码
+        let clickCount = 0;
+        let isHoliday = false;
+        let customHolidayDate = null;
+        const backgroundMusic = document.getElementById('backgroundMusic');
+        
+        // 面板控制
+        function togglePanel(panelId) {
+            const panel = document.getElementById(panelId);
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+        
+        function closePanel(panelId) {
+            document.getElementById(panelId).style.display = 'none';
+        }
+        
+        // 触摸事件
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                e.target.style.opacity = '0.7';
+            }
+        });
+        
+        document.addEventListener('touchend', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                e.target.style.opacity = '1';
+            }
+        });
+        
+        // 加油按钮功能
+        document.getElementById('cloudButton').addEventListener('click', function() {
+            clickCount++;
+            document.getElementById('counter').textContent = `鼓励: ${clickCount}次`;
+            
+            // 显示随机鼓励语
+            showEncouragement();
+            
+            // 每5次显示感谢
+            if (clickCount % 5 === 0) {
+                document.getElementById('thankYou').style.opacity = '1';
+                setTimeout(() => {
+                    document.getElementById('thankYou').style.opacity = '0';
+                }, 3000);
+            }
+        });
+        
+        function showEncouragement() {
+            const encouragements = [
+                "加油！你是最棒的！", "坚持就是胜利！", "相信自己！", 
+                "继续前进！", "你可以的！", "不要放弃！"
+            ];
+            const text = encouragements[Math.floor(Math.random() * encouragements.length)];
+            
+            const element = document.createElement('div');
+            element.className = 'encouragement';
+            element.textContent = text;
+            element.style.top = `${Math.random() * 70 + 15}%`;
+            document.querySelector('.container').appendChild(element);
+            
+            setTimeout(() => {
+                element.remove();
+            }, 8000);
+        }
+        
+        // 音乐控制
+        function playMusic() {
+            backgroundMusic.play().catch(e => {
+                console.log('自动播放被阻止，请手动点击播放');
+            });
+        }
+        
+        function pauseMusic() {
+            backgroundMusic.pause();
+        }
+        
+        function changeVolume(value) {
+            backgroundMusic.volume = parseFloat(value);
+        }
+        
+        // 初始化音量滑块
+        document.getElementById('volumeSlider').value = backgroundMusic.volume;
+        
+        // 倒计时功能
+        function startCountdown() {
+            setInterval(() => {
+                const holidayDate = customHolidayDate || new Date('2024-12-31');
+                const now = new Date();
+                const timeLeft = holidayDate - now;
+                
+                if (timeLeft > 0) {
+                    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    document.getElementById('bigCountdown').innerHTML = 
+                        `距离放假: ${days}天${hours}时${minutes}分`;
+                } else {
+                    document.getElementById('bigCountdown').innerHTML = '🎉 已经放假啦！';
+                    document.getElementById('holidayText').style.display = 'block';
+                    isHoliday = true;
+                }
+            }, 1000);
+        }
+        
+        // 设置放假日期
+        function setHolidayDate() {
+            const dateInput = document.getElementById('holidayDate').value;
+            if (dateInput) {
+                customHolidayDate = new Date(dateInput);
+                alert('放假日期已设置！');
+            }
+        }
+        
+        // 泡沫特效
+        function createFullScreenBubbles() {
+            const bubblesContainer = document.getElementById('bubbles');
+            bubblesContainer.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                createBubble(bubblesContainer);
+            }
+        }
+        
+        function createBubble(container) {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            const size = Math.random() * 30 + 10;
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${Math.random() * 100}vw`;
+            bubble.style.top = `${Math.random() * 100}vh`;
+            bubble.style.animationDuration = `${Math.random() * 10 + 5}s`;
+            container.appendChild(bubble);
+        }
+        
+        // 日记功能
+        function saveDiary() {
+            const content = document.getElementById('diaryInput').value;
+            if (content) {
+                const entries = JSON.parse(localStorage.getItem('diaries') || '[]');
+                entries.push({
+                    date: new Date().toLocaleString(),
+                    content: content
+                });
+                localStorage.setItem('diaries', JSON.stringify(entries));
+                document.getElementById('diaryInput').value = '';
+                loadDiaries();
+            }
+        }
+        
+        function loadDiaries() {
+            const entries = JSON.parse(localStorage.getItem('diaries') || '[]');
+            const container = document.getElementById('diaryEntries');
+            container.innerHTML = '';
+            
+            entries.reverse().forEach(entry => {
+                const div = document.createElement('div');
+                div.style.background = '#f0f8ff';
+                div.style.padding = '10px';
+                div.style.margin = '5px 0';
+                div.style.borderRadius = '5px';
+                div.innerHTML = `<small>${entry.date}</small><br>${entry.content}`;
+                container.appendChild(div);
+            });
+        }
+        
+        // 初始化
+        window.addEventListener('load', function() {
+            startCountdown();
+            createFullScreenBubbles();
+            loadDiaries();
+            
+            // 自动播放音乐（需要用户交互）
+            document.addEventListener('click', function initMusic() {
+                playMusic();
+                document.removeEventListener('click', initMusic);
+            });
+        });
+    </script>
+</body>
+</html>
